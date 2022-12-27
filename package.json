@@ -1,0 +1,35 @@
+{
+  "name": "the-grid-lab",
+  "version": "1.0.0",
+  "description": "Selenium wrapper",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r dotenv/config server.js",
+    "dev": "nodemon -r dotenv/config -e js server.js",
+    "test": "jest",
+    "migrate:db": "knex migrate:latest --knexfile config/knex.js"
+  },
+  "keywords": [
+    "npm",
+    "selenium"
+  ],
+  "author": "Sravan Sriram",
+  "license": "ISC",
+  "dependencies": {
+    "base-64": "^1.0.0",
+    "body-parser": "^1.20.1",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "fs": "0.0.1-security",
+    "http-proxy-middleware": "^2.0.6",
+    "jest": "23.6.0",
+    "joi": "^17.7.0",
+    "knex": "^2.3.0",
+    "pg": "^8.8.0",
+    "selenium-webdriver": "4.0.0-alpha.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

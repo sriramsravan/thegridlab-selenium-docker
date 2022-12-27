@@ -2,9 +2,9 @@
 # Configs have a mapping between the Docker image to use and the capabilities that need to be matched to
 # start a container with the given image.
 configs = [
-    "selenium/standalone-firefox:4.7.2-20221217", '{"browserName": "firefox", "platformName": "linux"}',
-    "selenium/standalone-chrome:4.7.2-20221217", '{"browserName": "chrome", "platformName": "linux"}',
-    "selenium/standalone-edge:4.7.2-20221217", '{"browserName": "MicrosoftEdge", "platformName": "linux"}'
+    "selenium/standalone-firefox:4.4.0-20220831", '{"browserName": "firefox", "platformName": "linux"}',
+    "selenium/standalone-chrome:4.4.0-20220831", '{"browserName": "chrome", "platformName": "linux"}',
+    "selenium/standalone-edge:4.4.0-20220831", '{"browserName": "MicrosoftEdge", "platformName": "linux"}'
     ]
 
 # URL for connecting to the docker daemon
@@ -21,9 +21,3 @@ video-image = "selenium/video:ffmpeg-4.3.1-20221217"
 #[server]
 #host = <ip-from-node-machine>
 #port = <port-from-node-machine>
-
-[sessions]
-implementation = "org.openqa.selenium.grid.sessionmap.jdbc.JdbcBackedSessionMap"
-jdbc-url = "jdbc:postgresql://db:5432/selenium_sessions"
-jdbc-user = "seluser"
-jdbc-password = "seluser"
