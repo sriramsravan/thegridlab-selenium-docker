@@ -9,13 +9,13 @@ export default function () {
       const { gridSession: session } = request;
       const { started_at, id: session_id } = session;
       const elapsed_time = Math.round((new Date() - started_at) / 1000) || 0;
-      console.log(
-        "logs",
-        "listners",
-        args.type,
-        args.request.requestId,
-        response.body
-      );
+      // console.log(
+      //   "logs",
+      //   "listners",
+      //   args.type,
+      //   args.request.requestId,
+      //   response.body
+      // );
       if (type === "request") {
         const log = new Log({
           session_id,

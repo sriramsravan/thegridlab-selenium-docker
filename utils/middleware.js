@@ -5,23 +5,32 @@ const eventsHasToBeEmitted = (events) => (req, _, next) => {
   next();
 };
 const sessionFindByIdMiddleWare = (req, _, next) => {
-  Session.findBySessionId(req.params.session_id).then((session) => {
-    req.gridSession = session;
-    next();
-  });
+  Session.findBySessionId(req.params.session_id)
+    .then((session) => {
+      req.gridSession = session;
+      next();
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
-const sessionCreateMiddleWare = (req, _, next) => {
+const sessionCreateMiddleWare = async (req, _, next) => {
   const created_at = new Date();
   const capabilities = req.body;
   const session = new Session({ created_at, capabilities });
-  session.save().then((_) => {
-    req.gridSession = session;
-    next();
-  });
+  session
+    .save()
+    .then((_) => {
+      req.gridSession = session;
+      next();
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 export {
-    eventsHasToBeEmitted,
-    sessionCreateMiddleWare,
-    sessionFindByIdMiddleWare
-} 
+  eventsHasToBeEmitted,
+  sessionCreateMiddleWare,
+  sessionFindByIdMiddleWare,
+};

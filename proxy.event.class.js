@@ -37,7 +37,7 @@ class ProxyEvent extends EventEmitter {
           self.emit(event, { request: req, response: res, type: "response" });
         });
         func
-          ? func(req, res).then(() => {
+          ? func(req, res).finally(() => {
               oldEnd.apply(res, arguments);
             })
           : oldEnd.apply(res, arguments);

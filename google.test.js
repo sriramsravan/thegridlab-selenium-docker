@@ -10,11 +10,18 @@ describe('test google.com', () => {
         until
     } = require('selenium-webdriver');
     var driver;
+    let testNumber = 1;
 
-    beforeEach(() => {
-        driver = new Builder()
+    beforeEach(async() => {
+        driver = await new Builder()
             // .usingServer('http://localhost:4444/wd/hub')
             .usingServer('http://username:password@localhost:3000/wd/hub')
+                .withCapabilities({
+                    "gl:project":"The Grid Lab",
+                    "gl:application":"The Grid Lab",
+                    "gl:testNumber":testNumber++,
+                    "browserName":"chrome"
+                })
                 .forBrowser('chrome')
                 .build();
     });
@@ -25,7 +32,7 @@ describe('test google.com', () => {
 
     it('should open google search', async () => {
         await driver.get('http://www.google.com');
-        driver
+        await driver
             .getTitle()
             .then(title => {
                 expect(title).toEqual('Google');
@@ -37,7 +44,7 @@ describe('test google.com', () => {
         var element = await driver.findElement(By.css('input[title=Search]'));
         await element.sendKeys("selenium", Key.RETURN);
         await driver.wait(until.titleContains("selenium"), 4000);
-        driver
+        await driver
             .getTitle()
             .then(title => {
                 expect(title).toEqual('selenium - Google Search');

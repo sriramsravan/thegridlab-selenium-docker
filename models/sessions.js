@@ -44,12 +44,20 @@ class Session {
     return results.map((result) => new Session(result));
   }
 
-  static async findBySessionId(session_id) {
+  static async findBySessionId(session_id,tries = 1) {
+    if(!session_id) throw Error("session_id is mandatory")
     const result = await Session.connection
       .select()
       .from(Session.tableName)
       .where({ session_id })
       .first();
+    if(tries >= 3 ){
+      throw Error("Unable to identify the session. Please try again.")
+    }
+    if(!result){ 
+      return Session.findBySessionId(session_id,++tries);
+    }
+
     return new Session(result);
   }
   static async findById(id) {

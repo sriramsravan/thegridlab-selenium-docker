@@ -79,6 +79,19 @@ app.all(
   })
 );
 
+function errorLogger(error, req, res, next) {
+  // for logging errors
+  console.error(error); // or using any fancy logging library
+  next(error); // forward to next middleware
+}
+
+function failSafeHandler(error, req, res, next) {
+  // generic handler
+  res.status(500).json({ value: { error : error.message } });
+}
+
+app.use(errorLogger);
+app.use(failSafeHandler);
 app.listen(3000, () => {
   console.log("Proxy server listening on port 3000");
 });
