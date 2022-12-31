@@ -49,7 +49,8 @@ class Log {
       .select(["logs_session.*", "sessions.session_id"])
       .from(Log.tableName)
       .innerJoin("sessions", "logs_session.session_id", "sessions.id")
-      .where({ "sessions.uuid": sessionUuid });
+      .where({ "sessions.uuid": sessionUuid })
+      .orderBy("id","asc");
     return results.map((result) => new Log(result));
   }
 

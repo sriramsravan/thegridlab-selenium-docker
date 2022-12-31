@@ -13,6 +13,9 @@ const sessionSchema = Joi.object({
     .required(),
   capabilities: Joi.object().allow(null),
   session_id: Joi.string().uuid().allow(null),
+  project: Joi.string().required(),
+  application: Joi.string().required(),
+  sessionName: Joi.string().required(),
 });
 
 class Session {
@@ -25,6 +28,9 @@ class Session {
     this.status = properties.status || "pending";
     this.capabilities = properties.capabilities;
     this.session_id = properties.session_id;
+    this.project = properties.capabilities.desiredCapabilities["gl:project"];
+    this.application = properties.capabilities.desiredCapabilities["gl:application"];
+    this.sessionName = properties.capabilities.desiredCapabilities["gl:sessionName"].toString();
   }
 
   static get tableName() {
@@ -40,22 +46,22 @@ class Session {
       .select()
       .from(Session.tableName)
       .where(condition)
-      .orderBy('id', 'desc');
+      .orderBy("id", "desc");
     return results.map((result) => new Session(result));
   }
 
-  static async findBySessionId(session_id,tries = 1) {
-    if(!session_id) throw Error("session_id is mandatory")
+  static async findBySessionId(session_id, tries = 1) {
+    if (!session_id) throw Error("session_id is mandatory");
     const result = await Session.connection
       .select()
       .from(Session.tableName)
       .where({ session_id })
       .first();
-    if(tries >= 3 ){
-      throw Error("Unable to identify the session. Please try again.")
+    if (tries >= 3) {
+      throw Error("Unable to identify the session. Please try again.");
     }
-    if(!result){ 
-      return Session.findBySessionId(session_id,++tries);
+    if (!result) {
+      return Session.findBySessionId(session_id, ++tries);
     }
 
     return new Session(result);
@@ -93,4 +99,8 @@ class Session {
   }
 }
 
+Session.prototype.toJSON = function () {
+  this.id = this.uuid;
+  return this;
+};
 export default Session;

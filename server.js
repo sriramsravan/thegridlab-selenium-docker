@@ -12,14 +12,21 @@ import {
   sessionFindByIdMiddleWare,
   authenticationMiddleWare,
 } from "./utils/index.js";
-
+import { capabilities } from "./utils/validators.js";
 import router from "./routes/index.js";
 import listener from "./listeners.js";
+import cors from "cors";
 
 const { SELENIUM_HUB } = process.env;
 listener();
+var corsOptions = {
+  origin: 'http://localhost:3001',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
 const app = express();
 app.use(bodyParser.json());
+app.use(cors(corsOptions))
 app.use((req, _, next) => {
   req.requestId = uuid.v4();
   next();
@@ -29,6 +36,7 @@ app.use("/api", router);
 app.post(
   "/wd/hub/session",
   authenticationMiddleWare,
+  capabilities,
   sessionCreateMiddleWare,
   eventsHasToBeEmitted(["session", "logs"]),
   createProxyMiddleware({
@@ -87,7 +95,9 @@ function errorLogger(error, req, res, next) {
 
 function failSafeHandler(error, req, res, next) {
   // generic handler
-  res.status(500).json({ value: { error : error.message } });
+  res
+    .status(400)
+    .json({ value: { error: "unknow error", message: error.message } });
 }
 
 app.use(errorLogger);

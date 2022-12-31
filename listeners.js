@@ -35,17 +35,10 @@ export default function () {
       }
     });
 
-    proxyEvent.on("session", (args) => {
-      // update the status of the session.
-      console.log("session", "listners", args.type, args.request.requestId);
-    });
-    proxyEvent.on("sessionCreated", (args) => {
-      console.log(
-        "sessionCreated",
-        "listners",
-        args.type,
-        args.request.requestId
-      );
-    });
+    // proxyEvent.on("session", (args) => {
+    //   // update the status of the session.
+    //   console.log("session", "listners", args.type, args.request.requestId);
+    // });
+
   }
 }
