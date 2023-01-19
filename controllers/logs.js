@@ -1,4 +1,5 @@
-import {Log} from "../models/index.js";
+import { Log } from "../models/index.js";
+import { logEventEmitter } from "../models/logs.js";
 
 async function getLogs(req, res) {
   try {
@@ -22,7 +23,37 @@ async function getLogBySessionId(req, res) {
   }
 }
 
-export {
-  getLogs,
-  getLogBySessionId,
+const getLogBySessionIdSendEvents = async (req, res) => {
+  // Set the Content-Type header
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    Connection: "keep-alive",
+  });
+  const sessionUUID = req.gridSession.id;
+  const status = req.gridSession.status;
+  if (status === "completed") {
+    return res.end();
+  }
+  const sendCreatedEvent = (log) => {
+    if (log.session_id === sessionUUID) {
+      res.write("event: created\n");
+      res.write(`data: ${JSON.stringify(log)}\n\n`);
+    }
+  };
+
+  logEventEmitter.on("created", sendCreatedEvent);
+  const sendUpdatedEvent = (log) => {
+    if (log.session_id === sessionUUID) {
+      res.write("event: updated\n");
+      res.write(`data: ${JSON.stringify(log)}\n\n`);
+    }
+  };
+  logEventEmitter.on("updated", sendUpdatedEvent);
+  // Stop sending updates when the connection is closed
+  req.on("close", () => {
+    logEventEmitter.off("created", sendCreatedEvent);
+    logEventEmitter.off("updated", sendUpdatedEvent);
+  });
 };
+export { getLogs, getLogBySessionId, getLogBySessionIdSendEvents };

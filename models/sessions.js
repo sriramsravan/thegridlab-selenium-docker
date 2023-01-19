@@ -1,6 +1,9 @@
 import Joi from "joi";
 import uuid from "uuid";
 import database from "../config/db.js";
+import { EventEmitter } from "events";
+
+const sessionEventEmitter = new EventEmitter();
 
 const sessionSchema = Joi.object({
   id: Joi.number(),
@@ -12,10 +15,14 @@ const sessionSchema = Joi.object({
     .valid("completed", "error", "running", "pending")
     .required(),
   capabilities: Joi.object().allow(null),
-  session_id: Joi.string().uuid().allow(null),
+  session_id: Joi.string().allow(null),
   project: Joi.string().required(),
   application: Joi.string().required(),
-  sessionName: Joi.string().required(),
+  session_name: Joi.string().required(),
+  os: Joi.string(),
+  type: Joi.string(),
+  browser_name: Joi.string(),
+  browser_version: Joi.string(),
 });
 
 class Session {
@@ -28,9 +35,15 @@ class Session {
     this.status = properties.status || "pending";
     this.capabilities = properties.capabilities;
     this.session_id = properties.session_id;
+    this.os = properties.os;
+    this.type = properties.type;
+    this.browser_name = properties.browser_name;
+    this.browser_version = properties.browser_version;
     this.project = properties.capabilities.desiredCapabilities["gl:project"];
-    this.application = properties.capabilities.desiredCapabilities["gl:application"];
-    this.sessionName = properties.capabilities.desiredCapabilities["gl:sessionName"].toString();
+    this.application =
+      properties.capabilities.desiredCapabilities["gl:application"];
+    this.session_name =
+      properties.capabilities.desiredCapabilities["gl:sessionName"].toString();
   }
 
   static get tableName() {
@@ -57,7 +70,7 @@ class Session {
       .from(Session.tableName)
       .where({ session_id })
       .first();
-    if (tries >= 3) {
+    if (tries >= 5) {
       throw Error("Unable to identify the session. Please try again.");
     }
     if (!result) {
@@ -84,6 +97,7 @@ class Session {
       .insert(this, ["id"])
       .into(Session.tableName);
     this.id = result[0].id;
+    sessionEventEmitter.emit("created", this);
     return this;
   }
   async update() {
@@ -95,12 +109,14 @@ class Session {
       .update(this)
       .where({ id: this.id })
       .into(Session.tableName);
+    sessionEventEmitter.emit("updated", this);
     return this;
   }
 }
 
-Session.prototype.toJSON = function () {
-  this.id = this.uuid;
-  return this;
-};
+// Session.prototype.toJSON = function () {
+//   this.id = this.uuid;
+//   return this;
+// };
 export default Session;
+export { sessionEventEmitter };

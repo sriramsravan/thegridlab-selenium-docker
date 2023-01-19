@@ -1,19 +1,22 @@
 const fs = require("fs");
 jest.setTimeout(500000);
 
-describe("test google.com", () => {
+describe("why - google.com", () => {
   const { Builder, By, Key, until } = require("selenium-webdriver");
   var driver;
   let testNumber = 1;
 
   beforeEach(async () => {
     driver = await new Builder()
-      // .usingServer('http://localhost:4444/wd/hub')
+      // .usingServer('http://13.126.196.198:4444/wd/hub')
+      // .usingServer("http://username:password@43.204.238.237:3000/wd/hub")
       .usingServer("http://username:password@localhost:3000/wd/hub")
       .withCapabilities({
         "gl:project": "The Grid Lab",
         "gl:application": "Google",
         "gl:sessionName": expect.getState().currentTestName || testNumber++,
+        // "se:recordVideo": "true",
+        // "se:screenResolution": "1920x1080",
         browserName: "chrome",
       })
       .forBrowser("chrome")

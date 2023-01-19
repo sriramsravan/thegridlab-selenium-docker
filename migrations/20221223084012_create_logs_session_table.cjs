@@ -3,7 +3,9 @@ exports.up = function (knex) {
     table.increments("id").primary();
     table.integer("session_id").unsigned().notNullable();
     table.string("request_id").unique().notNullable();
+    table.string("http_method").notNullable();
     table.string("action").notNullable();
+    table.string("message").nullable();
     table.integer("elapsed_time").unsigned().notNullable();
     table.json("payload").nullable();
     table.json("response").nullable();

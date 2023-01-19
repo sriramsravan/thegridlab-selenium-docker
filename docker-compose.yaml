@@ -1,26 +1,27 @@
-# To execute this docker-compose yml file use `docker-compose -f docker-compose-v3-dynamic-grid.yml up`
-# Add the `-d` flag at the end for detached execution
-# To stop the execution, hit Ctrl+C, and then `docker-compose -f docker-compose-v3-dynamic-grid.yml down`
-version: "3"
+version: '3'
 services:
-  node-docker:
-    image: selenium/node-docker:4.4.0-20220831
-    volumes:
-      - ./assets:/opt/selenium/assets
-      - ./NodeDocker/config.toml:/opt/bin/config.toml
-      - ./NodeDocker/sessions.toml:/opt/bin/sessions.toml
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - selenium-hub
+  db:
+    image: postgres
     environment:
-      - SE_EVENT_BUS_HOST=selenium-hub
-      - SE_EVENT_BUS_PUBLISH_PORT=4442
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-
-  selenium-hub:
-    image: selenium/hub:4.4.0-20220831
-    container_name: selenium-hub
+      POSTGRES_DB: development
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  app:
+    # image: sravan98/my-express-app:lastest
+    build: .
+    command: bash -c "npm run migrate:db && npm start"
+    depends_on:
+      - db
+    environment:
+      DB_USER: admin
+      DB_HOST: db
+      DB_NAME: development
+      DB_PASSWORD: admin
+      DB_PORT: 5432
+      SELENIUM_HUB: http://192.168.29.5:4444
     ports:
-      - "4442:4442"
-      - "4443:4443"
-      - "4444:4444"
+      - "3000:3000"
+volumes:
+  db-data:
