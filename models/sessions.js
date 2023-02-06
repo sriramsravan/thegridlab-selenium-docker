@@ -12,17 +12,18 @@ const sessionSchema = Joi.object({
   ended_at: Joi.date().allow(null),
   started_at: Joi.date().allow(null),
   status: Joi.string()
-    .valid("completed", "error", "running", "pending")
+    .valid("completed", "error", "running", "pending", "timedout")
     .required(),
   capabilities: Joi.object().allow(null),
   session_id: Joi.string().allow(null),
-  project: Joi.string().required(),
-  application: Joi.string().required(),
-  session_name: Joi.string().required(),
   os: Joi.string(),
   type: Joi.string(),
   browser_name: Joi.string(),
   browser_version: Joi.string(),
+  project: Joi.string().required(),
+  application: Joi.string().optional(),
+  session_name: Joi.string().required(),
+  build_id: Joi.number().required(),
 });
 
 class Session {
@@ -44,6 +45,7 @@ class Session {
       properties.capabilities.desiredCapabilities["gl:application"];
     this.session_name =
       properties.capabilities.desiredCapabilities["gl:sessionName"].toString();
+    this.build_id = properties.build_id;
   }
 
   static get tableName() {
@@ -85,6 +87,7 @@ class Session {
       .from(Session.tableName)
       .where({ uuid: id })
       .first();
+    if (!result) return null;
     return new Session(result);
   }
 

@@ -1,4 +1,4 @@
-import { Session } from "../models/index.js";
+import { Build, Project, Session } from "../models/index.js";
 import axios from "axios";
 
 let LICENSE_STATUS = true;
@@ -18,9 +18,10 @@ const sessionFindByIdMiddleWare = (req, _, next) => {
     });
 };
 
-const sessionByIdMiddleWare = (req, _, next) => {
+const sessionByIdMiddleWare = (req, res, next) => {
   Session.findById(req.params.id)
     .then((session) => {
+      if (!session) return res.status(404).json({ message: "Session not found" });
       req.gridSession = session;
       next();
     })
@@ -32,11 +33,46 @@ const sessionByIdMiddleWare = (req, _, next) => {
 const sessionCreateMiddleWare = async (req, _, next) => {
   const created_at = new Date();
   const capabilities = req.body;
-  const session = new Session({ created_at, capabilities });
+  const build_id = req.build.id;
+  const session = new Session({ created_at, capabilities, build_id });
   session
     .save()
-    .then((_) => {
-      req.gridSession = session;
+    .then((_session) => {
+      req.gridSession = _session;
+      next();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const projectCreateMiddleWare = async (req, _, next) => {
+  const capabilities = req.body;
+  const projectName = capabilities.desiredCapabilities["gl:project"];
+
+  const project = new Project({ name: projectName });
+  project
+    .save()
+    .then((_project) => {
+      req.project = _project;
+      next();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const buildCreateMiddleWare = async (req, _, next) => {
+  const capabilities = req.body;
+  const { id: user_id } = req.user;
+  const project_id = req.project.id;
+  const buildName = capabilities.desiredCapabilities["gl:build"];
+
+  const build = new Build({ name: buildName, project_id, user_id });
+  build
+    .save()
+    .then((_build) => {
+      req.build = _build;
       next();
     })
     .catch((err) => {
@@ -61,7 +97,7 @@ const licenseCheck = async () => {
     })
     .catch((error) => {
       LICENSE_STATUS = false;
-      console.error(error.message)
+      console.error(error.message);
       // process.exit(1);
       // throw error
     });
@@ -88,6 +124,8 @@ export {
   sessionCreateMiddleWare,
   sessionFindByIdMiddleWare,
   sessionByIdMiddleWare,
+  buildCreateMiddleWare,
+  projectCreateMiddleWare,
   licenseCheckMiddleWare,
-  licenseCheck
+  licenseCheck,
 };

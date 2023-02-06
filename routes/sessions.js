@@ -11,6 +11,10 @@ router.get("/sse", sessions.getSessionsSendEvents);
 router.get("/:id", sessions.getSessionById);
 
 router.get("/:id/logs", logs.getLogBySessionId);
-router.get("/:id/logs/sse",sessionByIdMiddleWare, logs.getLogBySessionIdSendEvents);
+router.get(
+  "/:id/logs/sse",
+  sessionByIdMiddleWare,
+  logs.getLogBySessionIdSendEvents
+);
 
 export default router;

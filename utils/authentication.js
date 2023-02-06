@@ -1,7 +1,8 @@
 import pkg from "base-64";
+import { User } from "../models/index.js";
 const { decode } = pkg;
 
-export default function(req, res, next) {
+export default async function (req, res, next) {
   // Check the authentication of the incoming request
   if (
     req.headers.authorization &&
@@ -12,15 +13,20 @@ export default function(req, res, next) {
     // Decode the base64-encoded string
     const credentials = decode(base64Credentials).split(":");
     const username = credentials[0];
-    const password = credentials[1];
-
+    const access_key = credentials[1];
+    const user = await User.findOne({ username, access_key });
     // Check the username and password
-    if (username === "username" && password === "password") {
+    if (user) {
+      req.user = user;
       next();
     } else {
-      res.status(401).send("Unauthorized");
+      res
+        .status(401)
+        .json({ value: { error: "unknow error", message: "Unauthorized" } });
     }
   } else {
-    res.status(401).send("Unauthorized");
+    res
+      .status(401)
+      .json({ value: { error: "unknow error", message: "Unauthorized" } });
   }
-};
+}

@@ -10,10 +10,10 @@ describe("why - google.com", () => {
     driver = await new Builder()
       // .usingServer('http://13.126.196.198:4444/wd/hub')
       // .usingServer("http://username:password@43.204.238.237:3000/wd/hub")
-      .usingServer("http://username:password@localhost:3000/wd/hub")
+      .usingServer("http://admin:57a4f614ebba7f86d71db9f9c26ed57e@localhost:3000/wd/hub")
       .withCapabilities({
         "gl:project": "The Grid Lab",
-        "gl:application": "Google",
+        "gl:build": "build_001",
         "gl:sessionName": expect.getState().currentTestName || testNumber++,
         // "se:recordVideo": "true",
         // "se:screenResolution": "1920x1080",

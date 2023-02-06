@@ -18,7 +18,7 @@ import { capabilities } from "./utils/validators.js";
 import router from "./routes/index.js";
 import listener from "./listeners.js";
 import cors from "cors";
-import { licenseCheck, licenseCheckMiddleWare } from "./utils/middleware.js";
+import { buildCreateMiddleWare, licenseCheck, licenseCheckMiddleWare, projectCreateMiddleWare } from "./utils/middleware.js";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -28,6 +28,7 @@ console.log(__dirname)
 listener();
 var corsOptions = {
   origin: ["http://localhost:3001", "http://localhost","http://3.109.209.94","http://43.204.238.237"],
+  credentials:true,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
@@ -48,6 +49,8 @@ app.post(
   "/wd/hub/session",
   authenticationMiddleWare,
   capabilities,
+  projectCreateMiddleWare,
+  buildCreateMiddleWare,
   sessionCreateMiddleWare,
   eventsHasToBeEmitted(["session", "logs"]),
   createProxyMiddleware({

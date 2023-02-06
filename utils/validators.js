@@ -17,7 +17,7 @@ import Joi from "joi";
 const capabilitiesSchema = Joi.object({
   desiredCapabilities: Joi.object({
     "gl:project": Joi.string().required().label("gl:project in capabilities"),
-    "gl:application": Joi.string().required().label("gl:application in capabilities"),
+    "gl:build": Joi.string().required().label("gl:build in capabilities"),
     browserName: Joi.string().required().label("browserName in capabilities"),
   }).unknown(),
   capabilities: Joi.object().allow(null),

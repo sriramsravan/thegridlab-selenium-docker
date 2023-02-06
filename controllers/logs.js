@@ -33,6 +33,8 @@ const getLogBySessionIdSendEvents = async (req, res) => {
   const sessionUUID = req.gridSession.id;
   const status = req.gridSession.status;
   if (status === "completed") {
+    res.write("event: close\n");
+    res.write(`data: data finished\n\n`);
     return res.end();
   }
   const sendCreatedEvent = (log) => {

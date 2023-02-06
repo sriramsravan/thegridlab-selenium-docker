@@ -3,7 +3,7 @@ exports.up = async function(knex) {
       table.increments('id').primary();
       table.string('uuid').unique().notNullable();
       table.string('project').notNullable();
-      table.string('application').notNullable();
+      table.string('application').nullable();
       table.string('session_name').notNullable();
       table.timestamp('created_at').defaultTo(knex.fn.now()).notNullable();
       table.timestamp('started_at').nullable();
